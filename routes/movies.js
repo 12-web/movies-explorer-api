@@ -27,7 +27,7 @@ router.post('/', celebrate({
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),
-}), createMovie);
+}), auth, createMovie);
 
 router.delete('/:movieId', celebrate({
   cookies: Joi.object().keys({
@@ -36,6 +36,6 @@ router.delete('/:movieId', celebrate({
   params: Joi.object().keys({
     movieId: Joi.string().length(24).hex().required(),
   }),
-}), deleteMovie);
+}), auth, deleteMovie);
 
 module.exports = router;
