@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 const UnauthorizedError = require('../components/UnauthorizedError');
 
 const userSchema = new mongoose.Schema({
