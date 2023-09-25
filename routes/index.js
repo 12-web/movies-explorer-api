@@ -1,37 +1,35 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+const NotFoundError = require('../components/NotFoundError');
 const {
   createUser,
   login,
   signout,
 } = require('../controllers/users');
+const auth = require('../middlewares/auth');
+const { createUserVal, loginUserVal } = require('../validators');
 
 router.use('/users', require('./users'));
 router.use('/movies', require('./movies'));
 
-router.post('/signout', signout);
+router.post('/signout', auth, signout);
 
 router.post(
   '/signup',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().email().required(),
-      password: Joi.string().required(),
-      name: Joi.string().min(2).max(30),
-    }),
-  }),
+  createUserVal,
   createUser,
 );
 
 router.post(
   '/signin',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().email().required(),
-      password: Joi.string().required(),
-    }),
-  }),
+  loginUserVal,
   login,
 );
+
+/**
+ * обработка неверного пути
+ */
+router.all('*', () => {
+  throw new NotFoundError('Задан неверный путь');
+});
 
 module.exports = router;

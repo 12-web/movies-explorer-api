@@ -6,9 +6,9 @@ const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const NotFoundError = require('./components/NotFoundError');
 const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { dbConn, rateLimiterConfig } = require('./utils/config');
 
 dotenv.config();
 const {
@@ -32,7 +32,9 @@ app.use(
   }),
 );
 
-const limiter = rateLimit(require('./utils/rateLimiterConfig'));
+app.use(requestLogger);
+
+const limiter = rateLimit(rateLimiterConfig);
 
 app.use(limiter);
 app.use(helmet());
@@ -53,26 +55,22 @@ mongoose.set('toJSON', { useProjection: true });
 /**
  * подключение базы данных
  */
-mongoose.connect(NODE_ENV === 'production' ? DB_CONN : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
+mongoose.connect(NODE_ENV === 'production' ? DB_CONN : dbConn, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   autoIndex: true,
 });
 
-app.use(requestLogger);
+app.use(errorLogger);
 
 /**
  * установка роутов
  */
 app.use('/', require('./routes'));
 
-app.use(errorLogger);
 /**
  * обработка ошибок
  */
-app.all('*', () => {
-  throw new NotFoundError('Задан неверный путь');
-});
 
 app.use(errors());
 app.use(errorHandler);

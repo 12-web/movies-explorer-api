@@ -1,4 +1,4 @@
-const ForbiddenError = require('../components/BadRequestError');
+const ForbiddenError = require('../components/ForbiddenError');
 const BadRequestError = require('../components/BadRequestError');
 const NotFoundError = require('../components/NotFoundError');
 const Movie = require('../models/movie');
@@ -6,9 +6,10 @@ const Movie = require('../models/movie');
 /**
  * полечение фильмов из БД
  */
-module.exports.getMovies = async (_, res, next) => {
+module.exports.getMovies = async (req, res, next) => {
   try {
-    const movies = await Movie.find({});
+    const movies = await Movie.find({ owner: req.user._id });
+    console.log(movies);
     res.send(movies);
   } catch (err) {
     next(err);
@@ -30,7 +31,9 @@ module.exports.deleteMovie = async (req, res, next) => {
      * удалить карточку может только пользователь, создавший карточку
      */
     if (movie.owner._id.toString() !== req.user._id) {
-      throw new ForbiddenError('У данного пользователя нет прав для удаления фильма');
+      throw new ForbiddenError(
+        'У данного пользователя нет прав для удаления фильма',
+      );
     }
 
     /**

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const linkRegex = require('../utils/utils');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -14,7 +15,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   year: {
-    type: Number,
+    type: String,
     required: true,
   },
   description: {
@@ -24,21 +25,37 @@ const movieSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
+    validate: {
+      validator(v) {
+        return linkRegex.test(v);
+      },
+      message: 'Введен неверный тип ссылки',
+    },
   },
   trailerLink: {
     type: String,
     required: true,
+    validate: {
+      validator(v) {
+        return linkRegex.test(v);
+      },
+      message: 'Введен неверный тип ссылки',
+    },
   },
   thumbnail: {
     type: String,
     required: true,
+    validate: {
+      validator(v) {
+        return linkRegex.test(v);
+      },
+      message: 'Введен неверный тип ссылки',
+    },
   },
   owner: {
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
-      required: true,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    required: true,
   },
   movieId: {
     type: Number,

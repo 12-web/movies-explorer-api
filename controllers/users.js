@@ -29,12 +29,12 @@ module.exports.getUser = async (req, res, next) => {
  * изменение данных пользователя
  */
 module.exports.updateProfile = async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email } = req.body;
 
   try {
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, email, password },
+      { name, email },
       {
         new: true,
         runValidators: true,
