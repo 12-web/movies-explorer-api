@@ -1,4 +1,4 @@
-const ForbiddenError = require('../../react-mesto-api-full-gha/backend/components/ForbiddenError');
+const ForbiddenError = require('../components/BadRequestError');
 const BadRequestError = require('../components/BadRequestError');
 const NotFoundError = require('../components/NotFoundError');
 const Movie = require('../models/movie');
