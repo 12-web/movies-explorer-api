@@ -11,7 +11,12 @@ const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 dotenv.config();
-const { PORT = 3000, NODE_ENV, ORIGIN } = process.env;
+const {
+  PORT = 3000,
+  NODE_ENV,
+  ORIGIN,
+  DB_CONN,
+} = process.env;
 const app = express();
 
 /**
@@ -27,10 +32,7 @@ app.use(
   }),
 );
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
+const limiter = rateLimit(require('./utils/rateLimiterConfig'));
 
 app.use(limiter);
 app.use(helmet());
@@ -51,23 +53,18 @@ mongoose.set('toJSON', { useProjection: true });
 /**
  * подключение базы данных
  */
-mongoose.connect('mongodb://127.0.0.1:27017/bitfilmsdb', {
+mongoose.connect(NODE_ENV === 'production' ? DB_CONN : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   autoIndex: true,
 });
 
 app.use(requestLogger);
-// app.use((req, res) => {
-//   req.user._id = 'asdasdasd';
-// });
 
 /**
  * установка роутов
  */
 app.use('/', require('./routes'));
-app.use('/users', require('./routes/users'));
-app.use('/movies', require('./routes/movies'));
 
 app.use(errorLogger);
 /**

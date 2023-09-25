@@ -27,17 +27,14 @@ const userSchema = new mongoose.Schema({
  * @param { String } password - пароль пользователя
  * @returns { Object } user - объект пользователя с данными
  */
-userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email })
-    .select('+password')
-    .then((user) => {
-      if (!user) throw new UnauthorizedError('Неверные почта или пароль');
-      return bcrypt.compare(password, user.password).then((matched) => {
-        if (!matched) throw new UnauthorizedError('Неверные почта или пароль');
+userSchema.statics.findUserByCredentials = async function (email, password) {
+  const user = await this.findOne({ email }).select('+password');
+  if (!user) throw new UnauthorizedError('Неверные почта или пароль');
+  return bcrypt.compare(password, user.password).then((matched) => {
+    if (!matched) throw new UnauthorizedError('Неверные почта или пароль');
 
-        return user;
-      });
-    });
+    return user;
+  });
 };
 
 module.exports = mongoose.model('user', userSchema);

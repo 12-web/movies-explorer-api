@@ -4,10 +4,10 @@ const {
   createUser,
   login,
   signout,
-  checkUser,
 } = require('../controllers/users');
 
-router.get('/', checkUser);
+router.use('/users', require('./users'));
+router.use('/movies', require('./movies'));
 
 router.post('/signout', signout);
 

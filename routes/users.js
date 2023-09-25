@@ -14,8 +14,9 @@ router.patch('/me', celebrate({
     jwt: Joi.string().required(),
   }),
   body: Joi.object().keys({
+    email: Joi.string().email(),
+    password: Joi.string(),
     name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
   }),
 }), auth, updateProfile);
 
